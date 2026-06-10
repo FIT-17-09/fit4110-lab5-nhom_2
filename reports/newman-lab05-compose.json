@@ -1,0 +1,2449 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "fit4110-lab05-iot-ingestion"
+    },
+    "item": [
+      {
+        "id": "6df55496-04d2-4cfb-ba1f-03e5d1a42f56",
+        "name": "Health & Status",
+        "item": [
+          {
+            "id": "4c541e35-4606-4aeb-97d1-5517f164e95e",
+            "name": "Health Check",
+            "request": {
+              "description": {
+                "content": "Check if the API is ready",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "health"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "response": [],
+            "event": []
+          },
+          {
+            "id": "61873e87-7a18-403a-99c8-28e28c54adee",
+            "name": "API Info",
+            "request": {
+              "description": {
+                "content": "Get API information",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "info"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "response": [],
+            "event": []
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "d755a117-b878-4133-b557-35375a17229e",
+        "name": "Sensor Readings",
+        "item": [
+          {
+            "id": "dd57b944-a113-49f1-b817-e5bcaa6788ea",
+            "name": "Create Reading",
+            "request": {
+              "description": {
+                "content": "Create a new sensor reading",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "readings"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "method": "POST",
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"device_id\": \"ESP32-LAB-A01\",\n  \"metric\": \"temperature\",\n  \"value\": 31.5,\n  \"unit\": \"celsius\",\n  \"timestamp\": \"2026-05-13T08:30:00+07:00\"\n}"
+              }
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "787c6436-c23d-4158-a61b-0999bb87dc51",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status code is 201', function () {",
+                    "    pm.response.to.have.status(201);",
+                    "});",
+                    "",
+                    "pm.test('Response includes reading_id', function () {",
+                    "    var jsonData = pm.response.json();",
+                    "    pm.expect(jsonData).to.have.property('reading_id');",
+                    "    pm.collectionVariables.set('reading_id', jsonData.reading_id);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "4834f78d-1bc6-48ea-bb9e-746998fab069"
+                }
+              }
+            ]
+          },
+          {
+            "id": "54dfbbcd-ff9f-4e94-bd6d-fd02f8adcdd6",
+            "name": "Get All Readings",
+            "request": {
+              "description": {
+                "content": "Get all sensor readings",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "readings"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": []
+          },
+          {
+            "id": "c27eb6b2-a0a8-4fb7-93c2-6492a2a3d7c7",
+            "name": "Get Reading by ID",
+            "request": {
+              "description": {
+                "content": "Get a specific sensor reading",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "readings",
+                  "{{reading_id}}"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": []
+          },
+          {
+            "id": "8d9ddd19-b758-4e2f-88d0-9731183736e4",
+            "name": "Delete Reading",
+            "request": {
+              "description": {
+                "content": "Delete a sensor reading",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "readings",
+                  "{{reading_id}}"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{auth_token}}"
+                }
+              ],
+              "method": "DELETE"
+            },
+            "response": [],
+            "event": []
+          }
+        ],
+        "event": []
+      },
+      {
+        "id": "d3525980-b476-4b86-bf5b-f83bebdf4811",
+        "name": "Authentication",
+        "item": [
+          {
+            "id": "d2037d43-6f29-42b3-bf5d-bd60b2a3a019",
+            "name": "Request without Token (should fail)",
+            "request": {
+              "description": {
+                "content": "Request without auth token should be denied",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "readings"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "c1377cd0-fa0c-4978-86a1-c9f6e763c1f2",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status code is 401', function () {",
+                    "    pm.response.to.have.status(401);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "3374be10-bd57-44ce-86c2-3c88f6b11ff5"
+                }
+              }
+            ]
+          },
+          {
+            "id": "00e44e05-7873-48ca-a0d2-6ca63e68c8ef",
+            "name": "Request with Invalid Token (should fail)",
+            "request": {
+              "description": {
+                "content": "Request with invalid token should be denied",
+                "type": "text/plain"
+              },
+              "url": {
+                "path": [
+                  "readings"
+                ],
+                "host": [
+                  "{{base_url}}"
+                ],
+                "query": [],
+                "variable": []
+              },
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer invalid-token"
+                }
+              ],
+              "method": "GET"
+            },
+            "response": [],
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "id": "f38b8c08-e837-4605-9188-4326748da0e6",
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status code is 401', function () {",
+                    "    pm.response.to.have.status(401);",
+                    "});"
+                  ],
+                  "_lastExecutionId": "1fbc1496-6152-47f2-9f34-7a68f01c4795"
+                }
+              }
+            ]
+          }
+        ],
+        "event": []
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "string",
+        "value": "http://localhost:8000",
+        "key": "base_url"
+      },
+      {
+        "type": "string",
+        "value": "local-dev-token",
+        "key": "auth_token"
+      },
+      {
+        "type": "string",
+        "value": "",
+        "key": "reading_id"
+      }
+    ],
+    "info": {
+      "_postman_id": "fit4110-lab05-iot-ingestion",
+      "name": "FIT4110 Lab 05 - IoT Ingestion Service",
+      "version": {
+        "raw": "1.0.0",
+        "major": 1,
+        "minor": 0,
+        "patch": 0,
+        "prerelease": [],
+        "build": [],
+        "string": "1.0.0"
+      },
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "End-to-end test collection for IoT Ingestion API running in Docker Compose stack",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2026-06-08T00:00:00+07:00",
+      "postman_exported_using": "Postman"
+    },
+    "id": "9be4354e-e310-44fd-9df8-9fe42e20f7b6",
+    "name": "FIT4110 Lab05 Local",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://localhost:8000",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "local-dev-token",
+        "key": "authToken"
+      },
+      {
+        "type": "any",
+        "value": "local",
+        "key": "env"
+      }
+    ]
+  },
+  "globals": {
+    "id": "50e6fdf2-82cc-4025-b4b9-ea06e568d324",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 3,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 8,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 4,
+        "pending": 0,
+        "failed": 2
+      },
+      "testScripts": {
+        "total": 3,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 8.875,
+      "responseMin": 4,
+      "responseMax": 33,
+      "responseSd": 9.252533436848525,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1781056426913,
+      "completed": 1781056427636
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 8,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "88734279-c2eb-40d5-9945-5083edfe63e8",
+          "httpRequestId": "6e1de73e-9578-4c6b-9c94-b01b8af4b521"
+        },
+        "item": {
+          "id": "4c541e35-4606-4aeb-97d1-5517f164e95e",
+          "name": "Health Check",
+          "request": {
+            "description": {
+              "content": "Check if the API is ready",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "health"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Check if the API is ready",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "health"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "603dea95-cb73-4b06-8b88-7b797665186c",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "3a095215-eac4-42c7-ab66-e3800edad469",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:46 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "59"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              111,
+              107,
+              34,
+              44,
+              34,
+              115,
+              101,
+              114,
+              118,
+              105,
+              99,
+              101,
+              34,
+              58,
+              34,
+              105,
+              111,
+              116,
+              45,
+              105,
+              110,
+              103,
+              101,
+              115,
+              116,
+              105,
+              111,
+              110,
+              34,
+              44,
+              34,
+              118,
+              101,
+              114,
+              115,
+              105,
+              111,
+              110,
+              34,
+              58,
+              34,
+              48,
+              46,
+              53,
+              46,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 33,
+          "responseSize": 59
+        },
+        "id": "4c541e35-4606-4aeb-97d1-5517f164e95e"
+      },
+      {
+        "cursor": {
+          "ref": "5be79cf0-9257-4fa5-8b21-de19672cc9ea",
+          "length": 8,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "61b01a58-d5a6-4667-be7b-79da30107237"
+        },
+        "item": {
+          "id": "61873e87-7a18-403a-99c8-28e28c54adee",
+          "name": "API Info",
+          "request": {
+            "description": {
+              "content": "Get API information",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "info"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Get API information",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "info"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "3d4d9f1e-dd45-4fa8-89ec-199e9503d7e4",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "9dcfcd21-1cdd-491f-8884-e8b710f704f3",
+          "status": "Not Found",
+          "code": 404,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:46 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "22"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              78,
+              111,
+              116,
+              32,
+              70,
+              111,
+              117,
+              110,
+              100,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 22
+        },
+        "id": "61873e87-7a18-403a-99c8-28e28c54adee"
+      },
+      {
+        "cursor": {
+          "ref": "9eac7c7a-59a4-48f3-a6a6-9d359bdd34d2",
+          "length": 8,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "43e98352-2368-4d3d-8c38-712cb2677669"
+        },
+        "item": {
+          "id": "dd57b944-a113-49f1-b817-e5bcaa6788ea",
+          "name": "Create Reading",
+          "request": {
+            "description": {
+              "content": "Create a new sensor reading",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"ESP32-LAB-A01\",\n  \"metric\": \"temperature\",\n  \"value\": 31.5,\n  \"unit\": \"celsius\",\n  \"timestamp\": \"2026-05-13T08:30:00+07:00\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "787c6436-c23d-4158-a61b-0999bb87dc51",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response includes reading_id', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('reading_id');",
+                  "    pm.collectionVariables.set('reading_id', jsonData.reading_id);",
+                  "});"
+                ],
+                "_lastExecutionId": "4834f78d-1bc6-48ea-bb9e-746998fab069"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Create a new sensor reading",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "readings"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer local-dev-token"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "0d22a385-97ab-475f-be24-a093952af2b7",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "143",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"device_id\": \"ESP32-LAB-A01\",\n  \"metric\": \"temperature\",\n  \"value\": 31.5,\n  \"unit\": \"celsius\",\n  \"timestamp\": \"2026-05-13T08:30:00+07:00\"\n}"
+          }
+        },
+        "response": {
+          "id": "d5340ef1-68c1-4030-bdfb-fc4ae33cf200",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:46 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "140"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              114,
+              101,
+              97,
+              100,
+              105,
+              110,
+              103,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              82,
+              45,
+              50,
+              48,
+              50,
+              54,
+              48,
+              54,
+              49,
+              48,
+              45,
+              48,
+              48,
+              48,
+              50,
+              34,
+              44,
+              34,
+              100,
+              101,
+              118,
+              105,
+              99,
+              101,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              69,
+              83,
+              80,
+              51,
+              50,
+              45,
+              76,
+              65,
+              66,
+              45,
+              65,
+              48,
+              49,
+              34,
+              44,
+              34,
+              109,
+              101,
+              116,
+              114,
+              105,
+              99,
+              34,
+              58,
+              34,
+              116,
+              101,
+              109,
+              112,
+              101,
+              114,
+              97,
+              116,
+              117,
+              114,
+              101,
+              34,
+              44,
+              34,
+              97,
+              99,
+              99,
+              101,
+              112,
+              116,
+              101,
+              100,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              54,
+              45,
+              49,
+              48,
+              84,
+              48,
+              49,
+              58,
+              53,
+              51,
+              58,
+              52,
+              55,
+              43,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 9,
+          "responseSize": 140
+        },
+        "id": "dd57b944-a113-49f1-b817-e5bcaa6788ea",
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "skipped": false
+          },
+          {
+            "assertion": "Response includes reading_id",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "04f561d2-e3bd-407d-a833-a361d92060b0",
+          "length": 8,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "8c58f5f6-f9ce-49be-9381-991bcc00bd8f"
+        },
+        "item": {
+          "id": "54dfbbcd-ff9f-4e94-bd6d-fd02f8adcdd6",
+          "name": "Get All Readings",
+          "request": {
+            "description": {
+              "content": "Get all sensor readings",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Get all sensor readings",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "readings"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer local-dev-token"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "d6bbff09-77c0-4a1d-a197-8f555238e85e",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "49039b67-b8f5-4a7e-a173-861a68ba3c95",
+          "status": "Method Not Allowed",
+          "code": 405,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:46 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "allow",
+              "value": "POST"
+            },
+            {
+              "key": "content-length",
+              "value": "31"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              77,
+              101,
+              116,
+              104,
+              111,
+              100,
+              32,
+              78,
+              111,
+              116,
+              32,
+              65,
+              108,
+              108,
+              111,
+              119,
+              101,
+              100,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 5,
+          "responseSize": 31
+        },
+        "id": "54dfbbcd-ff9f-4e94-bd6d-fd02f8adcdd6"
+      },
+      {
+        "cursor": {
+          "ref": "e00794b8-2c72-432c-b7a0-76fa54af902c",
+          "length": 8,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "0da2360d-b611-47f2-acf2-5dc675bda390"
+        },
+        "item": {
+          "id": "c27eb6b2-a0a8-4fb7-93c2-6492a2a3d7c7",
+          "name": "Get Reading by ID",
+          "request": {
+            "description": {
+              "content": "Get a specific sensor reading",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings",
+                "{{reading_id}}"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Get a specific sensor reading",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "readings",
+              "R-20260610-0002"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer local-dev-token"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b086f19e-0c62-4dac-ad0f-7d8660efbf6b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "321bf837-fc3b-4be7-a279-fd775ca84b26",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:47 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "content-length",
+              "value": "194"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              114,
+              101,
+              97,
+              100,
+              105,
+              110,
+              103,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              82,
+              45,
+              50,
+              48,
+              50,
+              54,
+              48,
+              54,
+              49,
+              48,
+              45,
+              48,
+              48,
+              48,
+              50,
+              34,
+              44,
+              34,
+              100,
+              101,
+              118,
+              105,
+              99,
+              101,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              69,
+              83,
+              80,
+              51,
+              50,
+              45,
+              76,
+              65,
+              66,
+              45,
+              65,
+              48,
+              49,
+              34,
+              44,
+              34,
+              109,
+              101,
+              116,
+              114,
+              105,
+              99,
+              34,
+              58,
+              34,
+              116,
+              101,
+              109,
+              112,
+              101,
+              114,
+              97,
+              116,
+              117,
+              114,
+              101,
+              34,
+              44,
+              34,
+              118,
+              97,
+              108,
+              117,
+              101,
+              34,
+              58,
+              51,
+              49,
+              46,
+              53,
+              44,
+              34,
+              117,
+              110,
+              105,
+              116,
+              34,
+              58,
+              34,
+              99,
+              101,
+              108,
+              115,
+              105,
+              117,
+              115,
+              34,
+              44,
+              34,
+              116,
+              105,
+              109,
+              101,
+              115,
+              116,
+              97,
+              109,
+              112,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              53,
+              45,
+              49,
+              51,
+              84,
+              48,
+              56,
+              58,
+              51,
+              48,
+              58,
+              48,
+              48,
+              43,
+              48,
+              55,
+              58,
+              48,
+              48,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              54,
+              45,
+              49,
+              48,
+              84,
+              48,
+              49,
+              58,
+              53,
+              51,
+              58,
+              52,
+              55,
+              43,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 6,
+          "responseSize": 194
+        },
+        "id": "c27eb6b2-a0a8-4fb7-93c2-6492a2a3d7c7"
+      },
+      {
+        "cursor": {
+          "ref": "efeb54d8-fa3d-40b4-82fd-0920a14090e2",
+          "length": 8,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "28561859-8f30-4c41-8aa0-aadf496a300b"
+        },
+        "item": {
+          "id": "8d9ddd19-b758-4e2f-88d0-9731183736e4",
+          "name": "Delete Reading",
+          "request": {
+            "description": {
+              "content": "Delete a sensor reading",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings",
+                "{{reading_id}}"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "method": "DELETE"
+          },
+          "response": [],
+          "event": []
+        },
+        "request": {
+          "description": {
+            "content": "Delete a sensor reading",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "readings",
+              "R-20260610-0002"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer local-dev-token"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "643120a2-600f-46b5-9d9d-27e5d71a060e",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "DELETE"
+        },
+        "response": {
+          "id": "feb3df7f-cd40-4105-9ed4-ae1f57d89a45",
+          "status": "Method Not Allowed",
+          "code": 405,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:47 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "allow",
+              "value": "GET"
+            },
+            {
+              "key": "content-length",
+              "value": "31"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              77,
+              101,
+              116,
+              104,
+              111,
+              100,
+              32,
+              78,
+              111,
+              116,
+              32,
+              65,
+              108,
+              108,
+              111,
+              119,
+              101,
+              100,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 31
+        },
+        "id": "8d9ddd19-b758-4e2f-88d0-9731183736e4"
+      },
+      {
+        "cursor": {
+          "ref": "8438c1af-239c-40ed-b40b-2327785ec86a",
+          "length": 8,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "15a6e09a-8f13-4176-838e-5e22d296e2a9"
+        },
+        "item": {
+          "id": "d2037d43-6f29-42b3-bf5d-bd60b2a3a019",
+          "name": "Request without Token (should fail)",
+          "request": {
+            "description": {
+              "content": "Request without auth token should be denied",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c1377cd0-fa0c-4978-86a1-c9f6e763c1f2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "_lastExecutionId": "3374be10-bd57-44ce-86c2-3c88f6b11ff5"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Request without auth token should be denied",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "readings"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "6fb984bb-bc42-43b9-97c2-a0cb3758ec53",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "70730965-e42b-4863-88df-f127fd00758f",
+          "status": "Method Not Allowed",
+          "code": 405,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:47 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "allow",
+              "value": "POST"
+            },
+            {
+              "key": "content-length",
+              "value": "31"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              77,
+              101,
+              116,
+              104,
+              111,
+              100,
+              32,
+              78,
+              111,
+              116,
+              32,
+              65,
+              108,
+              108,
+              111,
+              119,
+              101,
+              100,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 31
+        },
+        "id": "d2037d43-6f29-42b3-bf5d-bd60b2a3a019",
+        "assertions": [
+          {
+            "assertion": "Status code is 401",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 401",
+              "message": "expected response to have status code 401 but got 405",
+              "stack": "AssertionError: expected response to have status code 401 but got 405\n   at Object.eval sandbox-script.js:1:7)"
+            }
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "d0d91053-f435-4fdc-b00e-56852c860bdb",
+          "length": 8,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "3bf4071d-a98f-428f-9400-39c69a7c8eaf"
+        },
+        "item": {
+          "id": "00e44e05-7873-48ca-a0d2-6ca63e68c8ef",
+          "name": "Request with Invalid Token (should fail)",
+          "request": {
+            "description": {
+              "content": "Request with invalid token should be denied",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f38b8c08-e837-4605-9188-4326748da0e6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "_lastExecutionId": "1fbc1496-6152-47f2-9f34-7a68f01c4795"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Request with invalid token should be denied",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "readings"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer invalid-token"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "23de7ca6-e112-44cc-89e4-18962d10f98d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "2bbf2121-a631-4ad6-b22d-1ea746cf971e",
+          "status": "Method Not Allowed",
+          "code": 405,
+          "header": [
+            {
+              "key": "date",
+              "value": "Wed, 10 Jun 2026 01:53:47 GMT"
+            },
+            {
+              "key": "server",
+              "value": "uvicorn"
+            },
+            {
+              "key": "allow",
+              "value": "POST"
+            },
+            {
+              "key": "content-length",
+              "value": "31"
+            },
+            {
+              "key": "content-type",
+              "value": "application/json"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              77,
+              101,
+              116,
+              104,
+              111,
+              100,
+              32,
+              78,
+              111,
+              116,
+              32,
+              65,
+              108,
+              108,
+              111,
+              119,
+              101,
+              100,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 4,
+          "responseSize": 31
+        },
+        "id": "00e44e05-7873-48ca-a0d2-6ca63e68c8ef",
+        "assertions": [
+          {
+            "assertion": "Status code is 401",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 401",
+              "message": "expected response to have status code 401 but got 405",
+              "stack": "AssertionError: expected response to have status code 401 but got 405\n   at Object.eval sandbox-script.js:1:8)"
+            }
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 539
+    },
+    "failures": [
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 401",
+          "message": "expected response to have status code 401 but got 405",
+          "stack": "AssertionError: expected response to have status code 401 but got 405\n   at Object.eval sandbox-script.js:1:7)",
+          "checksum": "08a900fcc0aaa67bb2056c45ea25be38",
+          "id": "754f2591-63a5-451d-9256-790dcb199858",
+          "timestamp": 1781056427543,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 7,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "d2037d43-6f29-42b3-bf5d-bd60b2a3a019",
+          "name": "Request without Token (should fail)",
+          "request": {
+            "description": {
+              "content": "Request without auth token should be denied",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c1377cd0-fa0c-4978-86a1-c9f6e763c1f2",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "_lastExecutionId": "3374be10-bd57-44ce-86c2-3c88f6b11ff5"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "d3525980-b476-4b86-bf5b-f83bebdf4811",
+          "name": "Authentication",
+          "item": [
+            {
+              "id": "d2037d43-6f29-42b3-bf5d-bd60b2a3a019",
+              "name": "Request without Token (should fail)",
+              "request": {
+                "description": {
+                  "content": "Request without auth token should be denied",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "readings"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c1377cd0-fa0c-4978-86a1-c9f6e763c1f2",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 401', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "3374be10-bd57-44ce-86c2-3c88f6b11ff5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "00e44e05-7873-48ca-a0d2-6ca63e68c8ef",
+              "name": "Request with Invalid Token (should fail)",
+              "request": {
+                "description": {
+                  "content": "Request with invalid token should be denied",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "readings"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer invalid-token"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f38b8c08-e837-4605-9188-4326748da0e6",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 401', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "1fbc1496-6152-47f2-9f34-7a68f01c4795"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "8438c1af-239c-40ed-b40b-2327785ec86a",
+          "length": 8,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "15a6e09a-8f13-4176-838e-5e22d296e2a9",
+          "scriptId": "c1377cd0-fa0c-4978-86a1-c9f6e763c1f2",
+          "execution": "3374be10-bd57-44ce-86c2-3c88f6b11ff5"
+        }
+      },
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 401",
+          "message": "expected response to have status code 401 but got 405",
+          "stack": "AssertionError: expected response to have status code 401 but got 405\n   at Object.eval sandbox-script.js:1:8)",
+          "checksum": "51126b053dee492c9ece0b4795525eea",
+          "id": "b206ae8f-cd55-4df9-a54d-2578e3851f66",
+          "timestamp": 1781056427624,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 8,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "00e44e05-7873-48ca-a0d2-6ca63e68c8ef",
+          "name": "Request with Invalid Token (should fail)",
+          "request": {
+            "description": {
+              "content": "Request with invalid token should be denied",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "readings"
+              ],
+              "host": [
+                "{{base_url}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "f38b8c08-e837-4605-9188-4326748da0e6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "_lastExecutionId": "1fbc1496-6152-47f2-9f34-7a68f01c4795"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "id": "d3525980-b476-4b86-bf5b-f83bebdf4811",
+          "name": "Authentication",
+          "item": [
+            {
+              "id": "d2037d43-6f29-42b3-bf5d-bd60b2a3a019",
+              "name": "Request without Token (should fail)",
+              "request": {
+                "description": {
+                  "content": "Request without auth token should be denied",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "readings"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "c1377cd0-fa0c-4978-86a1-c9f6e763c1f2",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 401', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "3374be10-bd57-44ce-86c2-3c88f6b11ff5"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "00e44e05-7873-48ca-a0d2-6ca63e68c8ef",
+              "name": "Request with Invalid Token (should fail)",
+              "request": {
+                "description": {
+                  "content": "Request with invalid token should be denied",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "readings"
+                  ],
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer invalid-token"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f38b8c08-e837-4605-9188-4326748da0e6",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 401', function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});"
+                    ],
+                    "_lastExecutionId": "1fbc1496-6152-47f2-9f34-7a68f01c4795"
+                  }
+                }
+              ]
+            }
+          ],
+          "event": []
+        },
+        "cursor": {
+          "ref": "d0d91053-f435-4fdc-b00e-56852c860bdb",
+          "length": 8,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "3bf4071d-a98f-428f-9400-39c69a7c8eaf",
+          "scriptId": "f38b8c08-e837-4605-9188-4326748da0e6",
+          "execution": "1fbc1496-6152-47f2-9f34-7a68f01c4795"
+        }
+      }
+    ],
+    "error": null
+  }
+}

@@ -1,0 +1,267 @@
+{
+  "info": {
+    "_postman_id": "fit4110-lab05-iot-ingestion",
+    "name": "FIT4110 Lab 05 - IoT Ingestion Service",
+    "description": "End-to-end test collection for IoT Ingestion API running in Docker Compose stack",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check if the API is ready"
+          },
+          "response": []
+        },
+        {
+          "name": "API Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/info",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "info"
+              ]
+            },
+            "description": "Get API information"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Sensor Readings",
+      "item": [
+        {
+          "name": "Create Reading",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response includes reading_id', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('reading_id');",
+                  "    pm.collectionVariables.set('reading_id', jsonData.reading_id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"ESP32-LAB-A01\",\n  \"metric\": \"temperature\",\n  \"value\": 31.5,\n  \"unit\": \"celsius\",\n  \"timestamp\": \"2026-05-13T08:30:00+07:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/readings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "readings"
+              ]
+            },
+            "description": "Create a new sensor reading"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Readings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/readings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "readings"
+              ]
+            },
+            "description": "Get all sensor readings"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reading by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/readings/{{reading_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "readings",
+                "{{reading_id}}"
+              ]
+            },
+            "description": "Get a specific sensor reading"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Reading",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/readings/{{reading_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "readings",
+                "{{reading_id}}"
+              ]
+            },
+            "description": "Delete a sensor reading"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Request without Token (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/readings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "readings"
+              ]
+            },
+            "description": "Request without auth token should be denied"
+          },
+          "response": []
+        },
+        {
+          "name": "Request with Invalid Token (should fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalid-token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/readings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "readings"
+              ]
+            },
+            "description": "Request with invalid token should be denied"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "local-dev-token",
+      "type": "string"
+    },
+    {
+      "key": "reading_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
